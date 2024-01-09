@@ -1,0 +1,74 @@
+{% load static %} 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="mb-4">Order Details - {{ order }}</h1>
+        
+        <h2>Items:</h2>
+        <ul class="list-group mb-4">
+            {% for item in order.items.all %}
+                <li class="list-group-item">
+                    {{ item.name }} - {{ item.price }} {{ order.currency }}
+                </li>
+            {% endfor %}
+        </ul>
+
+        <h2>Discount:</h2>
+        {% with discount=order.discount_set.first %}
+            {% if discount %}
+                <p>{{ discount.amount }}% Discount</p>
+            {% endif %}
+        {% endwith %}
+
+        <h2>Tax:</h2>
+        {% with tax=order.tax_set.first %}
+            {% if tax %}
+                <p>{{ tax.amount }}% Tax</p>
+            {% endif %}
+        {% endwith %}
+
+        <h2>Total Amount:</h2>
+        <p class="lead">{{ order.calculate_total_amount }} {{ order.currency }}</p>
+
+        <form id="payment-form" data-order-id="{{ order.id }}">
+            <div class="form-row">
+              <label for="card-element">
+                Карта
+              </label>
+              <div id="card-element" class="form-control">
+                <!-- Элемент ввода карты Stripe -->
+              </div>
+          
+              <!-- Поддержка отображения ошибок -->
+              <div id="card-errors" role="alert" class="text-danger"></div>
+            </div>
+          
+            <div class="form-row">
+              <label for="cardholder-name">
+                Имя держателя карты
+              </label>
+              <input type="text" id="cardholder-name" class="form-control">
+            </div>
+          
+          
+            <button id="submit-button" class="btn btn-primary mt-3">Оплатить</button>
+          </form>
+          
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="{% static 'order.js' %}"></script>
+
+</body>
+</html>

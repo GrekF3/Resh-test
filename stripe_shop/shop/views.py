@@ -1,12 +1,13 @@
 # payments/views.py
 
 from django.conf import settings 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http.response import JsonResponse 
 from django.views.decorators.csrf import csrf_exempt 
 from django.views.generic.base import TemplateView
 import stripe
 from .models import Item, Order
+import json
 
 from django.http import Http404
 
@@ -34,6 +35,17 @@ def product_view(request, id):
         print(item)
         return render(request,'product_detail.html',context=context)
 
+def order_view(request,id):
+    if request.method == 'GET':
+        try:
+            order = Order.objects.get(pk=id)
+        except Order.DoesNotExist:
+            raise Http404
+        context = {
+            'order':order
+        }
+        return render(request,'order_detail.html', context=context)
+
 ## Калькулятор всего заказа
 def calculate_order_amount(order):
     items = []
@@ -44,22 +56,28 @@ def calculate_order_amount(order):
 ## Сеанс оплаты заказа
 @csrf_exempt
 def create_order_session(request, id):
-    try:
-        order = Order.objects.get(pk=id)
-    except Order.DoesNotExist:
-        raise Http404
+    order = get_object_or_404(Order, pk=id)
 
     stripe.api_key = settings.STRIPE_SECRET_KEY
 
-    # Создание PaymentIntent
-    intent = stripe.PaymentIntent.create(
-        amount=calculate_order_amount(order),
-        currency=order.currency,
-        payment_method_types=['card'],
-    )
+    try:
+        # Получение данных из POST запроса
+        payload = request.body.decode('utf-8')
+        data = json.loads(payload)
+        print(data)
 
-    # Возвращаем клиентский идентификатор сессии
-    return JsonResponse({'clientSecret': intent.client_secret})
+        # Создание PaymentIntent
+        intent = stripe.PaymentIntent.create(
+            amount=calculate_order_amount(order),
+            currency=order.currency,
+            automatic_payment_methods={"enabled": True},
+        )
+
+        # Возвращаем клиентский идентификатор сессии
+        return JsonResponse({'clientSecret': intent.client_secret})
+    except stripe.error.StripeError as e:
+        # Обработка ошибок Stripe
+        return JsonResponse({'error': str(e)}, status=400)
 
 # Сеанс оплаты товара
 @csrf_exempt
