@@ -12,5 +12,6 @@ urlpatterns = [
     path('item/<int:id>/', views.product_view),
     path('success/', views.SuccessView.as_view()), 
     path('cancelled/', views.CancelledView.as_view()), 
-    path('order/<int:id>/', views.create_order_session),
+    path('order/<int:id>/', views.order_view),
+    path('create_order_session/<int:id>/', views.create_order_session),
 ]

@@ -1,7 +1,7 @@
 {% load static %} 
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,7 +14,35 @@
   <body>
   <section class="section">
     <div class="container">
-      <button class="button is-primary" id="submitBtn">Purchase!</button>
+      <h2 class="mb-2">Инструкция</h2>
+      <ol>
+        <li>
+          <strong>Get Item:</strong> Возвращает информацию об объекте.
+          <p>HTTP Method: GET</p>
+          <p>Endpoint: /item/1</p>
+          <p>Описание: Вы можете узнать информацию об объекте с ID 1.</p>
+        </li>
+        <li>
+          <strong>Buy Item:</strong> Возвращает sessionId.
+          <p>HTTP Method: GET</p>
+          <p>Endpoint: /buy/1</p>
+          <p>Описание: Stripe Session Id для оплаты выбранного Item.</p>
+        </li>
+        <li>
+          <strong>Config:</strong> Возвращает Config Stripe.
+          <p>HTTP Method: GET</p>
+          <p>Endpoint: /config/</p>
+          <p>Описание: Возвращает Config Stripe.</p>
+        </li>
+        <li>
+          <strong>Order:</strong> Возвращает информацию об Order Id.
+          <p>HTTP Method: GET</p>
+          <p>Endpoint: /order/1</p>
+          <p>Описание: Возвращает страницу с заказом.</p>
+        </li>
+      </ol>
+
+
     </div>
   </section>
   </body>
